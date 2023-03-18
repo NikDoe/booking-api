@@ -1,10 +1,16 @@
 import { App } from "./app";
+import { ExeptionFilter } from "./errors/exeption.filter";
 import { LoggerSevice } from "./logger/logger.service";
 import { UsersController } from "./users/users.controller";
 
 async function bootstrap() {
     const logger = new LoggerSevice();
-    const app = new App(logger, new UsersController(logger));
+    const app = new App(
+        logger,
+        new UsersController(logger),
+        new ExeptionFilter(logger)
+    );
+
     await app.init();
 };
 
