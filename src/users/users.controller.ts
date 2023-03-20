@@ -8,6 +8,7 @@ import { IUsersController } from './users.controller.interface';
 import 'reflect-metadata';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
+import { User } from './user.entity';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -25,10 +26,12 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async register(
-		req: Request<{}, {}, RegisterDTO>,
+		{ body }: Request<{}, {}, RegisterDTO>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		this.ok(res, 'контроллер регистрации работает');
+		const newUser = new User(body.username, body.email);
+		await newUser.setPassword(body.password);
+		this.ok(res, newUser);
 	}
 }
