@@ -6,6 +6,8 @@ import { ILogger } from '../logger/logger.interface';
 import { TYPES } from '../types';
 import { IUsersController } from './users.controller.interface';
 import 'reflect-metadata';
+import { LoginDTO } from './dto/login.dto';
+import { RegisterDTO } from './dto/register.dto';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -17,11 +19,16 @@ export class UsersController extends BaseController implements IUsersController 
 		]);
 	}
 
-	async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async login(req: Request<{}, {}, LoginDTO>, res: Response, next: NextFunction): Promise<void> {
+		console.log(req.body);
 		next(new HTTPError('ошибка авторизации', 401, 'login'));
 	}
 
-	async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async register(
+		req: Request<{}, {}, RegisterDTO>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
 		this.ok(res, 'контроллер регистрации работает');
 	}
 }
