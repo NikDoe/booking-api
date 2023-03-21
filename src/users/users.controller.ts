@@ -8,11 +8,14 @@ import { IUsersController } from './users.controller.interface';
 import 'reflect-metadata';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { User } from './user.entity';
+import { IUsersService } from './users.service.interface';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
-	constructor(@inject(TYPES.ILogger) private usersLogger: ILogger) {
+	constructor(
+		@inject(TYPES.ILogger) private usersLogger: ILogger,
+		@inject(TYPES.IUsersService) private usersService: IUsersService,
+	) {
 		super(usersLogger);
 		this.bindRoutes([
 			{ path: '/login', method: 'post', func: this.login },
@@ -30,8 +33,10 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const newUser = new User(body.username, body.email);
-		await newUser.setPassword(body.password);
-		this.ok(res, newUser);
+		const result = await this.usersService.createUser(body);
+		if (!result) {
+			return next(new HTTPError('Такой пользователь уже существует', 422, 'register'));
+		}
+		this.ok(res, result);
 	}
 }
