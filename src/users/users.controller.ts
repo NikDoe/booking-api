@@ -19,7 +19,12 @@ export class UsersController extends BaseController implements IUsersController 
 	) {
 		super(usersLogger);
 		this.bindRoutes([
-			{ path: '/login', method: 'post', func: this.login },
+			{
+				path: '/login',
+				method: 'post',
+				func: this.login,
+				middlewares: [new ValidateMiddleware(LoginDTO)],
+			},
 			{
 				path: '/register',
 				method: 'post',
@@ -29,9 +34,14 @@ export class UsersController extends BaseController implements IUsersController 
 		]);
 	}
 
-	async login(req: Request<{}, {}, LoginDTO>, res: Response, next: NextFunction): Promise<void> {
-		console.log(req.body);
-		next(new HTTPError('ошибка авторизации', 401, 'login'));
+	async login(
+		{ body }: Request<{}, {}, LoginDTO>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.usersService.validateUser(body);
+		if (!result) return next(new HTTPError('ошибка авторизации', 401, 'login'));
+		this.ok(res, { message: 'Вы вошли в систему' });
 	}
 
 	async register(
