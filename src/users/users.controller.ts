@@ -43,6 +43,11 @@ export class UsersController extends BaseController implements IUsersController 
 		if (!result) {
 			return next(new HTTPError('Такой пользователь уже существует', 422, 'register'));
 		}
-		this.ok(res, result);
+		this.ok(res, {
+			message: 'Регистрация прошла успешно',
+			id: result.id,
+			username: result.username,
+			email: result.email,
+		});
 	}
 }
