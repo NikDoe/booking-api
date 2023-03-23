@@ -39,9 +39,17 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.usersService.validateUser(body);
+		const result = await this.usersService.handleUserLogin(body);
 		if (!result) return next(new HTTPError('ошибка авторизации', 401, 'login'));
-		this.ok(res, { message: 'Вы вошли в систему' });
+
+		res.cookie('jwt', result.refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none',
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
+		this.ok(res, { message: 'Вы вошли в систему', token: result.accessToken });
 	}
 
 	async register(
