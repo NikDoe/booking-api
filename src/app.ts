@@ -1,6 +1,5 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
-import { ExeptionFilter } from './errors/exeption.filter';
 import { ILogger } from './logger/logger.interface';
 import { UsersController } from './users/users.controller';
 import { injectable, inject } from 'inversify';
@@ -25,7 +24,7 @@ export class App {
 		@inject(TYPES.PrismaService) private prismaService: PrismaService,
 	) {
 		this.app = express();
-		this.port = 9000;
+		this.port = Number(configService.get('PORT'));
 	}
 
 	useMiddlewares(): void {
