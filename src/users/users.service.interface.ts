@@ -10,4 +10,5 @@ export interface ISignJWT {
 export interface IUsersService {
 	createUser: (dto: RegisterDTO) => Promise<UserModel | null>;
 	handleUserLogin: (dto: LoginDTO) => Promise<ISignJWT | null>;
+	getAllUsers: () => Promise<UserModel[]>;
 }

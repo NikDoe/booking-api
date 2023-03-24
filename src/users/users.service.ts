@@ -57,4 +57,8 @@ export class UsersService implements IUsersService {
 
 		return { accessToken, refreshToken };
 	}
+
+	async getAllUsers(): Promise<UserModel[]> {
+		return await this.usersRepository.findAll();
+	}
 }

@@ -10,6 +10,7 @@ import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { IUsersService } from './users.service.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -31,7 +32,18 @@ export class UsersController extends BaseController implements IUsersController 
 				func: this.register,
 				middlewares: [new ValidateMiddleware(RegisterDTO)],
 			},
+			{
+				path: '/',
+				method: 'get',
+				func: this.getUsers,
+				middlewares: [new AuthGuard()],
+			},
 		]);
+	}
+
+	async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+		const users = await this.usersService.getAllUsers();
+		this.ok(res, users);
 	}
 
 	async login(
