@@ -9,9 +9,14 @@ export class ValidateMiddleware implements IMiddleware {
 	execute({ body }: Request, res: Response, next: NextFunction): void {
 		const instance = plainToInstance(this.classToValidate, body);
 
-		validate(instance).then((erros) => {
-			if (erros.length > 0) {
-				res.status(422).send(erros);
+		validate(instance).then((errors) => {
+			if (errors.length > 0) {
+				const errorsMessage = errors
+					.map((item) => {
+						if (item.constraints) return Object.values(item.constraints);
+					})
+					.join('');
+				res.status(422).send({ error: errorsMessage });
 			} else {
 				next();
 			}
