@@ -1,10 +1,11 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class RegisterDTO {
-	@IsString({ message: 'укажите username' })
+	@IsNotEmpty({ message: 'Поле username обязательно для заполнения' })
 	username: string;
 
-	@IsEmail({}, { message: 'Неверно указан email' })
+	@IsNotEmpty({ message: 'Поле username обязательно для заполнения' })
+	@IsEmail({}, { message: 'невалидный email' })
 	email: string;
 
 	@IsString({ message: 'укажите пароль' })
