@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import { Server } from 'http';
 import { ILogger } from './logger/logger.interface';
 import { UsersController } from './users/users.controller';
@@ -29,6 +30,7 @@ export class App {
 	}
 
 	useMiddlewares(): void {
+		this.app.use(cors());
 		this.app.use(json());
 		const authMiddleware = new AuthMiddleware(this.configService.get('ACCESS_SECRET_TOKEN'));
 		this.app.use(authMiddleware.execute.bind(authMiddleware));

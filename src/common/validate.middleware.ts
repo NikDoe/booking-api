@@ -16,7 +16,7 @@ export class ValidateMiddleware implements IMiddleware {
 						if (item.constraints) return Object.values(item.constraints);
 					})
 					.join('');
-				res.status(422).send({ error: errorsMessage });
+				res.status(422).send({ message: errorsMessage });
 			} else {
 				next();
 			}
