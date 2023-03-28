@@ -71,13 +71,15 @@ export class UsersController extends BaseController implements IUsersController 
 	): Promise<void> {
 		const result = await this.usersService.createUser(body);
 		if (!result) {
-			return next(new HTTPError('Такой пользователь уже существует', 422, 'register'));
+			return next(new HTTPError('Пользователь с таким email уже существует', 422, 'register'));
 		}
 		this.ok(res, {
 			message: 'Регистрация прошла успешно',
-			id: result.id,
-			username: result.username,
-			email: result.email,
+			data: {
+				id: result.id,
+				username: result.username,
+				email: result.email,
+			},
 		});
 	}
 }
