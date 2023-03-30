@@ -30,6 +30,6 @@ export class User {
 	}
 
 	public async comparePassword(password: string): Promise<boolean> {
-		return compare(password, this.password);
+		return compare(password, this._password);
 	}
 }

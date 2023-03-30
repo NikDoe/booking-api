@@ -28,14 +28,15 @@ export class UsersService implements IUsersService {
 		return this.usersRepository.create(newUser);
 	}
 
-	async handleUserLogin(dto: LoginDTO): Promise<ISignJWT | null> {
+	async handleUserLogin(dto: LoginDTO): Promise<ISignJWT> {
 		const { email, password } = dto;
 		const existedUser = await this.usersRepository.find(email);
-		if (!existedUser) return null;
+		if (!existedUser) return { error: 'пользователя с таким email не существует' };
 
 		const user = new User(existedUser.username, existedUser.email, existedUser.password);
-		const isMatch = user.comparePassword(password);
-		if (!isMatch) return null;
+		const isMatch = await user.comparePassword(password);
+
+		if (!isMatch) return { error: 'неверный пароль' };
 
 		const accessToken = sign(
 			{

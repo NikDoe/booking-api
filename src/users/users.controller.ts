@@ -52,7 +52,7 @@ export class UsersController extends BaseController implements IUsersController 
 		next: NextFunction,
 	): Promise<void> {
 		const result = await this.usersService.handleUserLogin(body);
-		if (!result) return next(new HTTPError('ошибка авторизации', 401, 'login'));
+		if (result.error) return next(new HTTPError(result.error, 401, 'login'));
 
 		res.cookie('jwt', result.refreshToken, {
 			httpOnly: true,
