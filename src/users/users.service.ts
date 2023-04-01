@@ -1,65 +1,16 @@
-import { UserModel } from '@prisma/client';
-import { inject, injectable } from 'inversify';
-import { IConfigService } from '../config/config.service.inteface';
-import { TYPES } from '../types';
-import { LoginDTO } from './dto/login.dto';
-import { RegisterDTO } from './dto/register.dto';
-import { User } from './user.entity';
-import { IUsersRepository } from './users.repository.interface';
-import { ISignJWT, IUsersService } from './users.service.interface';
-import { sign } from 'jsonwebtoken';
+import { Injectable } from '@nestjs/common';
+import { User } from './interfaces/users.interface';
 
-@injectable()
-export class UsersService implements IUsersService {
-	constructor(
-		@inject(TYPES.IconfigService) private configService: IConfigService,
-		@inject(TYPES.IUsersRepository) private usersRepository: IUsersRepository,
-	) {}
-
-	async createUser(dto: RegisterDTO): Promise<UserModel | null> {
-		const { username, email, password } = dto;
-		const newUser = new User(username, email);
-		const salt = this.configService.get('SALT');
-		await newUser.setPassword(password, Number(salt));
-		const existedUser = await this.usersRepository.find(email);
-		if (existedUser) {
-			return null;
-		}
-		return this.usersRepository.create(newUser);
+@Injectable()
+export class UsersService {
+	async create(user: User): Promise<User> {
+		return user;
 	}
 
-	async handleUserLogin(dto: LoginDTO): Promise<ISignJWT> {
-		const { email, password } = dto;
-		const existedUser = await this.usersRepository.find(email);
-		if (!existedUser) return { error: 'пользователя с таким email не существует' };
-
-		const user = new User(existedUser.username, existedUser.email, existedUser.password);
-		const isMatch = await user.comparePassword(password);
-
-		if (!isMatch) return { error: 'неверный пароль' };
-
-		const accessToken = sign(
-			{
-				id: existedUser.id,
-				username: existedUser.username,
-				email: existedUser.email,
-			},
-			this.configService.get('ACCESS_SECRET_TOKEN'),
-			{ expiresIn: '15m' },
-		);
-
-		const refreshToken = sign(
-			{ email: existedUser.email },
-			this.configService.get('REFRESH_SECRET_TOKEN'),
-			{
-				expiresIn: '7d',
-			},
-		);
-
-		return { accessToken, refreshToken };
-	}
-
-	async getAllUsers(): Promise<UserModel[]> {
-		return await this.usersRepository.findAll();
+	async findAllUsers(): Promise<User[]> {
+		return [
+			{ username: 'NikDoe', email: 'nikdoe@email.ru', password: '12345' },
+			{ username: 'Modestal', email: 'modestal@email.ru', password: '12345' },
+		];
 	}
 }

@@ -3,4 +3,5 @@ dist
 prisma/data.db
 prisma/data.db-journal
 
-.env
+.development.env
+.production.env

@@ -5,13 +5,13 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node ./dist/main.js",
     "dev": "nodemon",
     "gen": "prisma generate",
     "lint": "eslint ./src/**",
     "lint:fix": "eslint ./src/** --fix",
     "build": "tsc",
-    "start:dev": "nest start --watch"
+    "start": "cross-env NODE_ENV=production nest start",
+    "start:dev": "cross-env NODE_ENV=development nest start --watch"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/NikDoe/booking-api#readme",
   "dependencies": {
     "@nestjs/common": "^9.3.12",
+    "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
     "@nestjs/platform-express": "^9.3.12",
     "@prisma/client": "^4.11.0",
@@ -37,6 +38,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "inversify": "^6.0.1",
