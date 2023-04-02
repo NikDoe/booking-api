@@ -1,7 +1,7 @@
 node_modules
 dist
-prisma/data.db
-prisma/data.db-journal
+src/database/data.db
+src/database/data.db-journal
 
 .development.env
 .production.env
