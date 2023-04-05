@@ -11,14 +11,16 @@ datasource db {
 }
 
 model UserModel {
-  id Int @id @default(autoincrement())
+  id       Int         @id @default(autoincrement())
   username String
-  email String @unique  
+  email    String      @unique
   password String
+  roles    RoleModel[]
 }
 
 model RoleModel {
-  id Int @id @default(autoincrement())
-  value String @unique
+  id          Int         @id @default(autoincrement())
+  value       String      @unique
   description String
+  users       UserModel[]
 }

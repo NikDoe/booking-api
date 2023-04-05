@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './users/users.controller';
 import { ConfigModule } from '@nestjs/config';
-import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
 	imports: [
@@ -10,6 +9,7 @@ import { UsersModule } from './users/users.module';
 			envFilePath: `.${process.env.NODE_ENV}.env`,
 		}),
 		UsersModule,
+		RolesModule,
 	],
 })
 export class AppModule {}

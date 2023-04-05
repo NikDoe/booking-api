@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { AddRoleDto } from './dto/add-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -10,18 +11,19 @@ export class UsersController {
 
 	@Get()
 	async getAllUsers(@Res() res: Response): Promise<void> {
-		const users = await this.usersService.findAllUsers();
-		res.json({ message: 'показать всех пользователей', data: users });
+		const users = await this.usersService.getAllUsers();
+		res.json({ message: 'список пользователей получен', data: users });
 	}
 
 	@Get(':id')
 	async getOneUser(@Res() res: Response, @Param('id') id: string): Promise<void> {
-		res.json({ message: `пользователь ${id}` });
+		const user = await this.usersService.getUserById(Number(id));
+		res.json({ message: `пользователь ${id}`, data: user });
 	}
 
 	@Post()
 	async createUser(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<void> {
-		const newUser = await this.usersService.create(createUserDto);
+		const newUser = await this.usersService.createUser(createUserDto);
 		res.json({ message: 'новый пользователь успешно создан', data: newUser });
 	}
 
@@ -31,11 +33,19 @@ export class UsersController {
 		@Param('id') id: string,
 		@Body() updateUserDto: UpdateUserDto,
 	): Promise<void> {
-		res.json({ message: `пользователь ${id} успешно обновлён`, data: updateUserDto });
+		const updatedUser = await this.usersService.updateUser(Number(id), updateUserDto);
+		res.json({ message: `пользователь ${id} успешно обновлён`, data: updatedUser });
 	}
 
 	@Delete(':id')
 	async removeUser(@Res() res: Response, @Param('id') id: string): Promise<void> {
-		res.send({ message: `пользователь ${id} успешно удалён` });
+		const deletedUser = await this.usersService.removeUser(Number(id));
+		res.send({ message: `пользователь ${id} успешно удалён`, data: deletedUser });
 	}
+
+	// @Put(':id/role')
+	// async addRole(@Body() addRoleDto: AddRoleDto, @Res() res: Response): Promise<void> {
+	// 	const update = await this.usersService.updateRoles(addRoleDto);
+	// 	res.send(update);
+	// }
 }
