@@ -7,10 +7,8 @@ import {
 } from '@nestjs/common';
 import { User } from './interfaces/users.interface';
 import { UsersRepository } from './users.repository';
-import { AddRoleDto } from './dto/add-role.dto';
 import { RolesRepository } from 'src/roles/roles.repository';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RoleModel } from '@prisma/client';
 
 @Injectable()
 export class UsersService {

@@ -1,7 +1,7 @@
 import { RoleModel } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { Role } from './interfaces/roles.interface';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()

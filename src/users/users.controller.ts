@@ -3,7 +3,6 @@ import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { AddRoleDto } from './dto/add-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -42,10 +41,4 @@ export class UsersController {
 		const deletedUser = await this.usersService.removeUser(Number(id));
 		res.send({ message: `пользователь ${id} успешно удалён`, data: deletedUser });
 	}
-
-	// @Put(':id/role')
-	// async addRole(@Body() addRoleDto: AddRoleDto, @Res() res: Response): Promise<void> {
-	// 	const update = await this.usersService.updateRoles(addRoleDto);
-	// 	res.send(update);
-	// }
 }
