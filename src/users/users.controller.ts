@@ -1,13 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('users')
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
+	@Roles('admin')
+	@UseGuards(RolesGuard)
 	@Get()
 	async getAllUsers(@Res() res: Response): Promise<void> {
 		const users = await this.usersService.getAllUsers();

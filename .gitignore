@@ -3,5 +3,4 @@ dist
 src/database/data.db
 src/database/data.db-journal
 
-.development.env
-.production.env
+.env

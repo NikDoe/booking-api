@@ -25,7 +25,10 @@ export class UsersRepository {
 	}
 
 	async getUserByEmail(email: string): Promise<UserModel> {
-		return await this.prismaService.userModel.findUnique({ where: { email } });
+		return await this.prismaService.userModel.findUnique({
+			where: { email },
+			include: { roles: true },
+		});
 	}
 
 	async getUserById(id: number): Promise<UserModel> {
