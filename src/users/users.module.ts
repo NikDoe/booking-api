@@ -9,5 +9,6 @@ import { RolesModule } from 'src/roles/roles.module';
 	imports: [PrismaModule, RolesModule],
 	controllers: [UsersController],
 	providers: [UsersService, UsersRepository],
+	exports: [UsersService],
 })
 export class UsersModule {}

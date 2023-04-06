@@ -9,6 +9,7 @@ import { User } from './interfaces/users.interface';
 import { UsersRepository } from './users.repository';
 import { RolesRepository } from 'src/roles/roles.repository';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -30,9 +31,9 @@ export class UsersService {
 				throw new ConflictException('поользователь с таким email уже существует');
 			}
 
-			const newUser = { ...user, roleId };
+			const hashPassword = await bcrypt.hash(user.password, 10);
 
-			return await this.usersRepository.createUser(newUser);
+			return await this.usersRepository.createUser({ ...user, password: hashPassword, roleId });
 		} catch (error) {
 			throw new HttpException({ error: error.message, status: error.status }, error.status);
 		}
