@@ -45,14 +45,32 @@ export class UsersService {
 
 			if (!existedUser) throw new NotFoundException('пользователь не найден');
 
-			if (!updateUserDto.roleValue)
-				return await this.usersRepository.updateUser(existedUser.id, updateUserDto);
+			const updatedUser = { ...updateUserDto };
+
+			if (updateUserDto.email) {
+				const duplicate = await this.usersRepository.getUserByEmail(updateUserDto.email);
+
+				if (duplicate) {
+					throw new ConflictException('поользователь с таким email уже существует');
+				}
+
+				updatedUser.email = updateUserDto.email;
+			}
+
+			if (updateUserDto.password) {
+				const hashPassword = await bcrypt.hash(updateUserDto.password, 10);
+				updatedUser.password = hashPassword;
+			}
+
+			if (!updateUserDto.roleValue) {
+				return await this.usersRepository.updateUser(existedUser.id, updatedUser);
+			}
 
 			const role = await this.rolesRepository.getRoleByValue(updateUserDto.roleValue);
 
 			if (!role) throw new NotFoundException('роль не найдена');
 
-			return await this.usersRepository.updateUser(existedUser.id, updateUserDto, role.id);
+			return await this.usersRepository.updateUser(existedUser.id, updatedUser, role.id);
 		} catch (error) {
 			throw new HttpException({ error: error.message, status: error.status }, error.status);
 		}
