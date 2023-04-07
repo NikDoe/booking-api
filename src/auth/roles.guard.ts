@@ -10,6 +10,8 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/types/enums';
+import { RoleModel } from '@prisma/client';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -17,7 +19,7 @@ export class RolesGuard implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		try {
-			const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+			const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
 				context.getHandler(),
 				context.getClass(),
 			]);
@@ -39,7 +41,9 @@ export class RolesGuard implements CanActivate {
 
 			const { user } = context.switchToHttp().getRequest();
 
-			const allowed = await user.roles.some((role) => requiredRoles.includes(role.value));
+			const allowed = requiredRoles.some((role) =>
+				user.roles.map((userRole: RoleModel) => userRole.value).includes(role),
+			);
 			if (!allowed) {
 				throw new ForbiddenException('Нет доступа');
 			}

@@ -5,12 +5,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/types/enums';
 
 @Controller('users')
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
-	@Roles('admin')
+	@Roles(Role.Admin)
 	@UseGuards(RolesGuard)
 	@Get()
 	async getAllUsers(@Res() res: Response): Promise<void> {
