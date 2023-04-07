@@ -14,10 +14,6 @@ export class AuthService {
 
 	async login(loginDto: LoginDto): Promise<any> {
 		try {
-			if (!loginDto.email || !loginDto.password) {
-				throw new BadRequestException('заполните все поля');
-			}
-
 			const user = await this.validateUser(loginDto);
 
 			return await this.generateToken(user);

@@ -24,9 +24,6 @@ export class UsersService {
 			const duplicate = await this.usersRepository.getUserByEmail(email);
 			const { id: roleId } = await this.rolesRepository.getRoleByValue('user');
 
-			if (!user.username || !user.email || !user.password)
-				throw new BadRequestException('заполните все поля');
-
 			if (duplicate) {
 				throw new ConflictException('поользователь с таким email уже существует');
 			}
