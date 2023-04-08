@@ -14,6 +14,7 @@ export class UsersRepository {
 		return await this.prismaService.userModel.create({
 			data: {
 				username,
+				avatar: this.setAvataTitle(username),
 				email,
 				password,
 				roles: {
@@ -51,16 +52,17 @@ export class UsersRepository {
 	async updateUser(userId: number, data: UpdateUserDto, roleId?: number): Promise<UserModel> {
 		const { username, email, password } = data;
 		return await this.prismaService.userModel.update({
-			data: roleId
-				? {
-						username,
-						email,
-						password,
-						roles: (await this.userHasRole(userId, roleId))
-							? { disconnect: { id: roleId } }
-							: { connect: { id: roleId } },
-				  }
-				: { username, email, password },
+			data: {
+				username,
+				...(username && { avatar: this.setAvataTitle(username) }),
+				email,
+				password,
+				...(roleId && {
+					roles: (await this.userHasRole(userId, roleId))
+						? { disconnect: { id: roleId } }
+						: { connect: { id: roleId } },
+				}),
+			},
 			where: { id: userId },
 			include: { roles: true },
 		});
@@ -71,5 +73,9 @@ export class UsersRepository {
 			where: { id: userId },
 			include: { roles: true },
 		});
+	}
+
+	private setAvataTitle(name: string): string {
+		return name.toUpperCase().slice(0, 2);
 	}
 }
