@@ -15,6 +15,14 @@ export class AuthController {
 	@Post('login')
 	async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<void> {
 		const token = await this.authService.login(loginDto);
+
+		res.cookie('jwt_booking_api', this.authService.generateRefreshToken(loginDto), {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none',
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
 		res.json({ message: 'вы вошли в систему', token });
 	}
 

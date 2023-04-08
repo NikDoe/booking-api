@@ -1,4 +1,4 @@
-import { RoleModel } from '@prisma/client';
+import { RoleModel, UserModel } from '@prisma/client';
 
 export interface User {
 	username: string;
@@ -6,7 +6,6 @@ export interface User {
 	password: string;
 }
 
-export interface UserWithRoles extends User {
-	id: number;
+export interface UserWithRoles extends UserModel {
 	roles: RoleModel[];
 }

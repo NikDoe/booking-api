@@ -13,7 +13,14 @@ export class RolesRepository {
 	}
 
 	async getRoleByValue(value: string): Promise<RoleModel> {
-		return await this.prismaService.roleModel.findUnique({ where: { value } });
+		return await this.prismaService.roleModel.upsert({
+			where: { value },
+			update: {},
+			create: {
+				value,
+				description: `описание роли ${value}`,
+			},
+		});
 	}
 
 	async getRoleById(id: number): Promise<RoleModel> {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserModel } from '@prisma/client';
+import { RoleModel, UserModel } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { User } from './interfaces/users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,7 +26,7 @@ export class UsersRepository {
 	}
 
 	async getUserByEmail(email: string): Promise<UserModel> {
-		return await this.prismaService.userModel.findUnique({
+		return await this.prismaService.userModel.findFirst({
 			where: { email },
 			include: { roles: true },
 		});
@@ -77,5 +77,14 @@ export class UsersRepository {
 
 	private setAvataTitle(name: string): string {
 		return name.toUpperCase().slice(0, 2);
+	}
+
+	async getUserRoles(email: string): Promise<RoleModel[]> {
+		const { roles } = await this.prismaService.userModel.findUnique({
+			where: { email },
+			select: { roles: true },
+		});
+
+		return roles;
 	}
 }

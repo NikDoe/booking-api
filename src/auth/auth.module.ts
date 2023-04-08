@@ -13,10 +13,7 @@ import { ValidationPipe } from 'src/pipes/validation.pipe';
 		ConfigModule.forRoot({
 			envFilePath: '.env',
 		}),
-		JwtModule.register({
-			secret: process.env.JWT_SECRET_KEY,
-			signOptions: { expiresIn: '24h' },
-		}),
+		JwtModule.register({}),
 	],
 	controllers: [AuthController],
 	providers: [
