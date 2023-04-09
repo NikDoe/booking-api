@@ -48,6 +48,11 @@ export class AuthService {
 
 	private async validateUser(loginDto: LoginDto): Promise<UserWithRoles> {
 		const existedUser = await this.usersRepository.getUserByEmail(loginDto.email);
+
+		if (!existedUser) {
+			throw new BadRequestException('неверный email или пароль');
+		}
+
 		const roles = await this.usersRepository.getUserRoles(loginDto.email);
 
 		const match = existedUser
