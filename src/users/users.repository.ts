@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleModel, UserModel } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
-import { User } from './interfaces/users.interface';
+import { User, UserWithRoles } from './interfaces/users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -25,10 +25,17 @@ export class UsersRepository {
 		});
 	}
 
-	async getUserByEmail(email: string): Promise<UserModel> {
+	async getUserByEmail(email: string): Promise<UserWithRoles> {
 		return await this.prismaService.userModel.findFirst({
 			where: { email },
-			include: { roles: true },
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				email: true,
+				password: true,
+				roles: true,
+			},
 		});
 	}
 
@@ -77,14 +84,5 @@ export class UsersRepository {
 
 	private setAvataTitle(name: string): string {
 		return name.toUpperCase().slice(0, 2);
-	}
-
-	async getUserRoles(email: string): Promise<RoleModel[]> {
-		const { roles } = await this.prismaService.userModel.findUnique({
-			where: { email },
-			select: { roles: true },
-		});
-
-		return roles;
 	}
 }
