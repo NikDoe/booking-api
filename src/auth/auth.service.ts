@@ -1,4 +1,10 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	HttpException,
+	Injectable,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
@@ -12,11 +18,30 @@ export class AuthService {
 		private readonly usersRepository: UsersRepository,
 	) {}
 
-	async login(loginDto: LoginDto): Promise<any> {
+	async login(loginDto: LoginDto): Promise<string> {
 		try {
 			const user = await this.validateUser(loginDto);
 
 			return await this.generateAccessToken(user);
+		} catch (error) {
+			throw new HttpException({ error: error.message, status: error.status }, error.status);
+		}
+	}
+
+	async refresh(token: string): Promise<string> {
+		try {
+			if (!token) throw new UnauthorizedException('Вы не авторизованы');
+
+			const { email } = await this.jwtService
+				.verifyAsync<{ email: string }>(token, { secret: process.env.REFRESHTOKEN_SECRET_KEY })
+				.catch((error) => {
+					throw new ForbiddenException(error.message);
+				});
+
+			const existedUser = await this.usersRepository.getUserByEmail(email);
+			if (!existedUser) throw new UnauthorizedException('Пользователь не найден');
+
+			return await this.generateAccessToken(existedUser);
 		} catch (error) {
 			throw new HttpException({ error: error.message, status: error.status }, error.status);
 		}
@@ -38,7 +63,7 @@ export class AuthService {
 			email: user.email,
 			roles: user.roles,
 		};
-		return await this.JwtSign(payload, process.env.ACCESSTOKEN_SECRET_KEY, '15m');
+		return await this.JwtSign(payload, process.env.ACCESSTOKEN_SECRET_KEY, '15s');
 	}
 
 	async generateRefreshToken(user: LoginDto): Promise<string> {

@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from 'src/users/users.service';
+import { Cookies } from './cookies.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +17,7 @@ export class AuthController {
 	async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<void> {
 		const token = await this.authService.login(loginDto);
 
-		res.cookie('jwt_booking_api', this.authService.generateRefreshToken(loginDto), {
+		res.cookie(process.env.COOKIES_KEY, await this.authService.generateRefreshToken(loginDto), {
 			httpOnly: true,
 			secure: true,
 			sameSite: 'none',
@@ -30,5 +31,24 @@ export class AuthController {
 	async registration(@Body() creatUserdto: CreateUserDto, @Res() res: Response): Promise<void> {
 		const newUser = await this.usersService.createUser(creatUserdto);
 		res.json({ message: 'регистрация прошла успешно', data: newUser });
+	}
+
+	@Get('refresh')
+	async refresh(
+		@Cookies(process.env.COOKIES_KEY) token: string,
+		@Res() res: Response,
+	): Promise<void> {
+		const newToken = await this.authService.refresh(token);
+		res.json({ token: newToken });
+	}
+
+	@Post('logout')
+	async logout(
+		@Cookies(process.env.COOKIES_KEY) token: string,
+		@Res() res: Response,
+	): Promise<void> {
+		if (!token) res.sendStatus(HttpStatus.NO_CONTENT);
+		res.clearCookie(process.env.COOKIES_KEY, { httpOnly: true, secure: true, sameSite: 'none' });
+		res.json({ message: 'вы вышли из системы' });
 	}
 }

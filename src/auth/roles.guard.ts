@@ -33,9 +33,13 @@ export class RolesGuard implements CanActivate {
 				throw new UnauthorizedException('Вы не авторизованы');
 			}
 
-			const payload = await this.jwtService.verifyAsync(token, {
-				secret: process.env.ACCESSTOKEN_SECRET_KEY,
-			});
+			const payload = await this.jwtService
+				.verifyAsync(token, {
+					secret: process.env.ACCESSTOKEN_SECRET_KEY,
+				})
+				.catch((error) => {
+					throw new ForbiddenException(error.message);
+				});
 
 			request['user'] = payload;
 
@@ -50,13 +54,7 @@ export class RolesGuard implements CanActivate {
 
 			return allowed;
 		} catch (error) {
-			throw new HttpException(
-				{
-					error: error.status ? error.message : 'Вы не авторизованы',
-					status: error.status ? error.status : 401,
-				},
-				error.status ? error.status : 401,
-			);
+			throw new HttpException({ error: error.message, status: error.status }, error.status);
 		}
 	}
 
