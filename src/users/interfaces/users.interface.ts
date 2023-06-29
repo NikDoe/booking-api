@@ -9,3 +9,5 @@ export interface User {
 export interface UserWithRoles extends UserModel {
 	roles: RoleModel[];
 }
+
+export type UserWithoutPassword = Omit<UserWithRoles, 'password'>;

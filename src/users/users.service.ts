@@ -1,11 +1,5 @@
-import {
-	BadRequestException,
-	ConflictException,
-	HttpException,
-	NotFoundException,
-	Injectable,
-} from '@nestjs/common';
-import { User } from './interfaces/users.interface';
+import { ConflictException, HttpException, NotFoundException, Injectable } from '@nestjs/common';
+import { User, UserWithoutPassword } from './interfaces/users.interface';
 import { UsersRepository } from './users.repository';
 import { RolesRepository } from 'src/roles/roles.repository';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -83,7 +77,7 @@ export class UsersService {
 		}
 	}
 
-	async getAllUsers(): Promise<User[]> {
+	async getAllUsers(): Promise<UserWithoutPassword[]> {
 		return await this.usersRepository.getAllUsers();
 	}
 

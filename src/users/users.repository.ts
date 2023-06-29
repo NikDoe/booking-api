@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RoleModel, UserModel } from '@prisma/client';
+import { UserModel } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
-import { User, UserWithRoles } from './interfaces/users.interface';
+import { User, UserWithRoles, UserWithoutPassword } from './interfaces/users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -46,8 +46,16 @@ export class UsersRepository {
 		});
 	}
 
-	async getAllUsers(): Promise<UserModel[]> {
-		return await this.prismaService.userModel.findMany({ include: { roles: true } });
+	async getAllUsers(): Promise<UserWithoutPassword[]> {
+		return await this.prismaService.userModel.findMany({
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				email: true,
+				roles: true,
+			},
+		});
 	}
 
 	async userHasRole(userId: number, roleId: number): Promise<UserModel> {

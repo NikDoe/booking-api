@@ -63,7 +63,7 @@ export class AuthService {
 			email: user.email,
 			roles: user.roles,
 		};
-		return await this.JwtSign(payload, process.env.ACCESSTOKEN_SECRET_KEY, '15s');
+		return await this.JwtSign(payload, process.env.ACCESSTOKEN_SECRET_KEY, '30m');
 	}
 
 	async generateRefreshToken(user: LoginDto): Promise<string> {
